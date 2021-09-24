@@ -55,6 +55,7 @@ public class BinaryManger : MonoBehaviour
             SaveListFromTemp(writer);
         }
     }
+
     public static void Load(string input ,List<string> output)
     {
         if (!File.Exists(Data.path))

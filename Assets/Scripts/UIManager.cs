@@ -121,6 +121,7 @@ public class UIManager : MonoBehaviour
 
     private void LoadData()
     {
+        BinaryManger.ReadFromStreamingAssets();
         GroupManager.SetActiveGroupName(Data.FirstGroupfileName);
         BinaryManger.Load(Data.path, Data.Links);
         GroupManager.SetActiveGroupName(Data.SecondGroupfileName);

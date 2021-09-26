@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
@@ -21,7 +22,7 @@ public class BinaryManger : MonoBehaviour
             }
         }
     }
-    private void SaveListFromTemp(BinaryWriter writer)
+    private static void SaveListFromTemp(BinaryWriter writer)
     {
         writer.Write(Data.tempList.Count);
         for (int i = 0; i < Data.tempList.Count; i++)
@@ -55,10 +56,21 @@ public class BinaryManger : MonoBehaviour
             SaveListFromTemp(writer);
         }
     }
+    public static void Save(string path)
+    {
+        using (
+            BinaryWriter writer =
+            new BinaryWriter(File.Open(path, FileMode.Create))
+    )
+        {
+            SaveListFromTemp(writer);
+        }
+    }
+
 
     public static void Load(string input ,List<string> output)
     {
-        if (!File.Exists(Data.path))
+        if (!File.Exists(input))
         {
             Debug.LogError("File does not exist " + input);
             return;
@@ -66,6 +78,32 @@ public class BinaryManger : MonoBehaviour
         using (BinaryReader reader = new BinaryReader(File.OpenRead(input)))
         {
             LoadList(reader, output);
+        }
+    }
+
+
+
+    public static void ReadFromStreamingAssets()
+    {
+        List<string> persistance = new List<string> {
+        Path.Combine(Application.persistentDataPath, "Links.dat"),
+        Path.Combine(Application.persistentDataPath, "Items.dat"),
+        Path.Combine(Application.persistentDataPath, "Stores.dat")};
+
+        List<string> streaming = new List<string> {
+        Path.Combine(Application.streamingAssetsPath, "Links.dat"),
+        Path.Combine(Application.streamingAssetsPath, "Items.dat"),
+        Path.Combine(Application.streamingAssetsPath, "Stores.dat")};
+
+        
+        for (int i = 0; i < persistance.Count; i++)
+        {
+            if (!File.Exists(persistance[i]))
+            {
+                Data.tempList.Clear();
+                Load(streaming[i], Data.tempList);
+                Save(persistance[i]);
+            }
         }
     }
 }
